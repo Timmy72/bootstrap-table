@@ -152,6 +152,7 @@
         selectItemName: 'btSelectItem',
         showHeader: true,
         showColumns: false,
+        showPaginationSwitch: false,
         showRefresh: false,
         showToggle: false,
         smartDisplay: true,
@@ -168,6 +169,8 @@
         searchTimeOut: 500,
         iconsPrefix: 'glyphicon', // glyphicon of fa (font awesome)
         icons: {
+            paginationSwitchDown: 'glyphicon-collapse-down',
+            paginationSwitchUp: 'glyphicon-collapse-up',
             refresh: 'glyphicon-refresh icon-refresh',
             toggle: 'glyphicon-list-alt icon-list-alt',
             columns: 'glyphicon-th icon-th'
@@ -211,6 +214,9 @@
         },
         formatNoMatches: function () {
             return 'No matching records found';
+        },
+        formatPagination: function () {
+            return 'Hide/Show pagination';
         },
         formatRefresh: function () {
             return 'Refresh';
@@ -564,6 +570,13 @@
             this.options.icons = calculateObjectValue(null, this.options.icons);
         }
 
+        if (this.options.showPaginationSwitch) {
+            html.push(sprintf('<button class="btn btn-default" type="button" name="paginationSwitch" title="%s">',
+                this.options.formatPagination()),
+                sprintf('<i class="%s %s"></i>', this.options.iconsPrefix, this.options.icons.paginationSwitchDown),
+                '</button>');
+        }
+
         if (this.options.showRefresh) {
             html.push(sprintf('<button class="btn btn-default" type="button" name="refresh" title="%s">',
                 this.options.formatRefresh()),
@@ -608,6 +621,11 @@
 
         if (html.length > 2) {
             this.$toolbar.append(html.join(''));
+        }
+
+        if (this.options.showPaginationSwitch) {
+            this.$toolbar.find('button[name="paginationSwitch"]')
+                .off('click').on('click', $.proxy(this.togglePagination, this));
         }
 
         if (this.options.showRefresh) {
@@ -722,7 +740,10 @@
         this.$pagination = this.$container.find('.fixed-table-pagination');
 
         if (!this.options.pagination) {
+            this.$pagination.hide();
             return;
+        } else {
+          this.$pagination.show();
         }
         var that = this,
             html = [],
@@ -1488,6 +1509,17 @@
         this.$loading.hide();
     };
 
+    BootstrapTable.prototype.togglePagination = function () {
+        this.options.pagination = !this.options.pagination;
+        var button = this.$toolbar.find('button[name="paginationSwitch"] i');
+        if (this.options.pagination) {
+            button.attr("class", this.options.iconsPrefix + " " + this.options.icons.paginationSwitchDown);
+        } else {
+            button.attr("class", this.options.iconsPrefix + " " + this.options.icons.paginationSwitchUp);
+        }
+        this.initServer();
+    };
+
     BootstrapTable.prototype.refresh = function (params) {
         if (params && params.url) {
             this.options.url = params.url;
@@ -1541,6 +1573,7 @@
         'mergeCells',
         'checkAll', 'uncheckAll',
         'check', 'uncheck',
+        'togglePagination',
         'refresh',
         'resetView',
         'destroy',
