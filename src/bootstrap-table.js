@@ -214,7 +214,7 @@
         formatNoMatches: function () {
             return 'No matching records found';
         },
-        formatPagination: function () {
+        formatPaginationSwitch: function () {
             return 'Hide/Show pagination';
         },
         formatRefresh: function () {
@@ -579,7 +579,7 @@
 
         if (this.options.showPaginationSwitch) {
             html.push(sprintf('<button class="btn btn-default" type="button" name="paginationSwitch" title="%s">',
-                this.options.formatPagination()),
+                this.options.formatPaginationSwitch()),
                 sprintf('<i class="%s %s"></i>', this.options.iconsPrefix, this.options.icons.paginationSwitchDown),
                 '</button>');
         }
